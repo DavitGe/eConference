@@ -8,6 +8,7 @@ import PublicPage from "./pages/PublicPage/PublicPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import AuthLayout from "./pages/AuthLayout/AuthLayout";
 import RegisterPage from "./pages/LoginPage/RegisterPage";
+import Layout from "./pages/Layout/Layout";
 
 async function loginAction({ request }: LoaderFunctionArgs) {
   let formData = await request.formData();
@@ -67,16 +68,21 @@ export const router = createBrowserRouter([
       // Our root route always provides the user, if logged in
       return { user: fakeAuthProvider.username };
     },
-    Component: AuthLayout,
     children: [
       {
-        index: true,
-        Component: PublicPage,
+        Component: Layout,
+        children: [
+          {
+            index: true,
+            Component: PublicPage,
+          },
+        ],
       },
       {
         path: "auth",
         action: loginAction,
         loader: loginLoader,
+        Component: AuthLayout,
         children: [
           {
             path: "login",
