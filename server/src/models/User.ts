@@ -22,19 +22,18 @@ export class User implements IUser {
     public twoFactorSecret?: string
   ) {}
 
-  static async findByEmail(email: string): Promise<IUser | undefined | void> {
+  static async findByEmail(email: string): Promise<IUser | undefined> {
     const query = `SELECT * FROM user WHERE email = "${email}"`;
-    try {
-      const response = await AppDataSource.query(query);
+    const response = await AppDataSource.query(query);
 
-      return response?.[0];
-    } catch (error) {
-      console.log(error);
-    }
+    return response?.[0];
   }
 
-  static findById(id: number): IUser | undefined {
-    return User.users.find((user) => user.id === id);
+  static async findById(id: number): Promise<IUser | undefined> {
+    const query = `SELECT * FROM user WHERE id = ${id}`;
+    const response = await AppDataSource.query(query);
+
+    return response?.[0];
   }
 
   static async create(user: Omit<IUser, "id">): Promise<IUser | void> {

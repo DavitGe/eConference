@@ -6,11 +6,11 @@ interface JwtPayload {
   id: number;
 }
 
-const protect = (
+const protect = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Response | void => {
+): Promise<Response | void> => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -21,14 +21,14 @@ const protect = (
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload;
-    const user = User.findById(decoded.id);
+    const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({ message: "Invalid token" });
     }
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Invalid token", error });
   }
 };
 

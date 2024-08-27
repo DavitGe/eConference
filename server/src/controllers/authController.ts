@@ -4,6 +4,7 @@ import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import { Request, Response } from "express";
 import { User, IUser } from "../models/User";
+import { AppDataSource } from "../data-source";
 
 const register = async (req: Request, res: Response): Promise<Response> => {
   if (!req?.body?.username || !req?.body?.email || !req?.body?.password)
@@ -55,29 +56,33 @@ const login = async (req: Request, res: Response): Promise<Response> => {
   return res.json({ token });
 };
 
-const setup2FA = (req: Request, res: Response): void => {
-  const user = User.findById(req.user!.id);
-  if (!user) {
-    res.status(404).json({ message: "User not found" });
+const setup2FA = async (req: Request, res: Response): Promise<void> => {
+  const secret: any = speakeasy.generateSecret({ length: 20 });
+  const query = `UPDATE user SET twoFactorSecret = "${
+    secret.base32
+  }" WHERE id = ${req.user!.id};`;
+  try {
+    qrcode.toDataURL(secret.otpauth_url, (err, dataUrl) => {
+      if (err) {
+        res.status(500).json({ message: "Error generating QR code" });
+        throw "Error generating QR code";
+      }
+
+      AppDataSource.query(query).then(() => {
+        res
+          .status(200)
+          .json({ message: "2FA has been setup", qrCodeUrl: dataUrl });
+      });
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error while setting up 2FA: ", err });
     return;
   }
-
-  const secret: any = speakeasy.generateSecret({ length: 20 });
-  user.twoFactorSecret = secret.base32;
-
-  qrcode.toDataURL(secret.otpauth_url, (err, dataUrl) => {
-    if (err) {
-      res.status(500).json({ message: "Error generating QR code" });
-      return;
-    }
-
-    res.json({ qrCodeUrl: dataUrl });
-  });
 };
 
-const verify2FA = (req: Request, res: Response): Response => {
+const verify2FA = async (req: Request, res: Response): Promise<Response> => {
   const { userId, token } = req.body;
-  const user = User.findById(userId);
+  const user = await User.findById(userId);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
