@@ -26,7 +26,11 @@
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true, // accessing index must always check for undefined
     "noUnusedLocals": true, // Report errors on unused local variables.
-    "noUnusedParameters": true // Report errors on unused parameters in functions
+    "noUnusedParameters": true, // Report errors on unused parameters in functions
+
+    "experimentalDecorators": true, //Enables support for decorators
+    "emitDecoratorMetadata": true, //Ensures that TypeScript emits metadata about types, which TypeORM uses to understand the types of properties.
+    "skipLibCheck": true
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules/**/*", "lib"]
