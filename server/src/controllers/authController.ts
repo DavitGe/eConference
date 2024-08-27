@@ -31,10 +31,14 @@ const register = async (req: Request, res: Response): Promise<Response> => {
 };
 
 const login = async (req: Request, res: Response): Promise<Response> => {
+  if (!req?.body?.email || !req?.body?.password)
+    return res
+      .status(400)
+      .json({ message: "Please provide all fields", req: req.body });
   const { email, password } = req.body;
 
   const user = await User.findByEmail(email);
-  if (!user) {
+  if (!user?.id) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 

@@ -26,12 +26,8 @@ export class User implements IUser {
     const query = `SELECT * FROM user WHERE email = "${email}"`;
     try {
       const response = await AppDataSource.query(query);
-      // const [results, fields] = await AppDataSource.query(query);
-      // console.log("res", results); // results contains rows returned by server
-      // console.log("field", fields); // fields contains extra meta data about results, if available
-      console.log("response", response);
 
-      return User.users.find((user) => user.email === email);
+      return response?.[0];
     } catch (error) {
       console.log(error);
     }
