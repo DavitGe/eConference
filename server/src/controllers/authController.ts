@@ -23,9 +23,13 @@ const register = async (req: Request, res: Response): Promise<Response> => {
   const newUser = await User.create(user);
   if (newUser?.id) {
     const token = generateToken(newUser);
-    return res
-      .status(201)
-      .json({ message: "User registered successfully", token });
+    res.cookie("authorization", token, {
+      httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client JavaScript
+      secure: true, // Ensure the cookie is only sent over HTTPS
+      maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
+      sameSite: "strict", // Helps prevent CSRF attacks
+    });
+    return res.status(201).json({ message: "User registered successfully" });
   } else {
     return res.status(500).json({ message: "Error while creating user" });
   }
@@ -53,6 +57,12 @@ const login = async (req: Request, res: Response): Promise<Response> => {
   }
 
   const token = generateToken(user);
+  res.cookie("authorization", token, {
+    httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client JavaScript
+    secure: true, // Ensure the cookie is only sent over HTTPS
+    maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
+    sameSite: "strict", // Helps prevent CSRF attacks
+  });
   return res.json({ token });
 };
 
