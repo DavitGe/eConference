@@ -33,6 +33,7 @@ function LoginPage() {
   };
   return (
     <>
+      {contextHolder}
       <LoginPageWrapper>
         <LoginPageContainer>
           <Form onFinish={onFinish}>
