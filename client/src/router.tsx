@@ -44,6 +44,12 @@ async function loginLoader() {
   return null;
 }
 
+async function homeLoader() {
+  if (!fakeAuthProvider.isAuthenticated) {
+    return redirect("/app/home");
+  }
+}
+
 function protectedLoader({ request }: LoaderFunctionArgs) {
   // If the user is not logged in and tries to access `/protected`, we redirect
   // them to `/login` with a `from` parameter that allows login to redirect back
@@ -70,13 +76,8 @@ export const router = createBrowserRouter([
     },
     children: [
       {
-        Component: Layout,
-        children: [
-          {
-            index: true,
-            Component: PublicPage,
-          },
-        ],
+        path: "home",
+        Component: PublicPage,
       },
       {
         path: "auth",
