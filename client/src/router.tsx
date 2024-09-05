@@ -102,7 +102,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "protected",
-        // loader: protectedLoader,
+        loader: protectedLoader,
         Component: ProtectedPage,
       },
     ],

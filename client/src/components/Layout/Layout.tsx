@@ -2,6 +2,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import Logo from "../Logo";
 import { Button, Flex } from "antd";
 import { LayoutContainer } from "./layout.styles";
+import { authProvider } from "../../context/auth";
 
 interface ILayoutProps {
   isBgTransparent?: boolean;
@@ -47,7 +48,16 @@ function Layout({
             </nav>
           ) : null}
         </Flex>
-        {protectedPage ? null : (
+        {protectedPage ? (
+          <Button
+            type="text"
+            onClick={() => {
+              authProvider.signout();
+            }}
+          >
+            Sign out
+          </Button>
+        ) : (
           <Flex align="center" gap={16}>
             <Button
               style={{ height: isAuthHeader ? 46 : 40 }}
