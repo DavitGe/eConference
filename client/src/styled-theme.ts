@@ -1,7 +1,9 @@
 const lightTheme = {
+  primary: "#1777ff",
   dividerColor: "#6c7173",
   bg: "#FFF",
   mainBgColor: "#fbf7ef",
+  textColor: "#1c1c1e",
 };
 
 const defaultTheme = {

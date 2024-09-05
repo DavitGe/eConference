@@ -3,6 +3,8 @@ import { LoginPageContainer, LoginPageWrapper } from "./loginpage.styled";
 import { Button, Divider, Form, FormProps, Input } from "antd";
 import { API_URL } from "../../utils/http";
 import useMessage from "antd/es/message/useMessage";
+import { useNavigate } from "react-router-dom";
+import { authProvider } from "../../context/auth";
 
 type fieldTypes = {
   username: string;
@@ -14,6 +16,7 @@ type fieldTypes = {
 function RegisterPage() {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = useMessage();
+  const navigate = useNavigate();
 
   const onFinish: FormProps<fieldTypes>["onFinish"] = (values) => {
     axios
@@ -22,11 +25,13 @@ function RegisterPage() {
         password: values.password,
         username: values.username,
       })
-      .then(() => {
+      .then(({ data }) => {
+        authProvider.signin(data.username);
         messageApi.open({
           type: "success",
           content: "User registered successfully",
         });
+        navigate("/protected");
       })
       .catch(() => {
         messageApi.open({

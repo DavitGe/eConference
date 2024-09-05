@@ -3,11 +3,12 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "react-router-dom";
-import { fakeAuthProvider } from "./context/auth";
 import PublicPage from "./pages/PublicPage/PublicPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import AuthLayout from "./pages/AuthLayout/AuthLayout";
 import RegisterPage from "./pages/LoginPage/RegisterPage";
+import Layout from "./components/Layout/Layout";
+import ProtectedPage from "./pages/ProtectedPage/ProtectedPage";
+import { authProvider } from "./context/auth";
 
 async function loginAction({ request }: LoaderFunctionArgs) {
   let formData = await request.formData();
@@ -22,7 +23,7 @@ async function loginAction({ request }: LoaderFunctionArgs) {
 
   // Sign in and redirect to the proper destination if successful.
   try {
-    await fakeAuthProvider.signin(username);
+    await authProvider.signin(username);
   } catch (error) {
     // Unused as of now but this is how you would handle invalid
     // username/password combinations - just like validating the inputs
@@ -37,17 +38,14 @@ async function loginAction({ request }: LoaderFunctionArgs) {
 }
 
 async function loginLoader() {
-  if (fakeAuthProvider.isAuthenticated) {
+  if (authProvider.isAuthenticated) {
     return redirect("/");
   }
   return null;
 }
 
 function protectedLoader({ request }: LoaderFunctionArgs) {
-  // If the user is not logged in and tries to access `/protected`, we redirect
-  // them to `/login` with a `from` parameter that allows login to redirect back
-  // to this page upon successful authentication
-  if (!fakeAuthProvider.isAuthenticated) {
+  if (!authProvider.isAuthenticated) {
     let params = new URLSearchParams();
     params.set("from", new URL(request.url).pathname);
     return redirect("/auth/login?" + params.toString());
@@ -55,28 +53,42 @@ function protectedLoader({ request }: LoaderFunctionArgs) {
   return null;
 }
 
-function ProtectedPage() {
-  return <h3>Protected</h3>;
+function publicLoader({ request }: LoaderFunctionArgs) {
+  if (authProvider.isAuthenticated) {
+    return redirect("/protected");
+  }
+  return null;
 }
+
+const AuthHeader = () => {
+  return (
+    <Layout
+      isBgTransparent={false}
+      isNavDisplayed={false}
+      height={96}
+      isAuthHeader
+    />
+  );
+};
 
 export const router = createBrowserRouter([
   {
     id: "root",
     path: "/",
     loader() {
-      // Our root route always provides the user, if logged in
-      return { user: fakeAuthProvider.username };
+      return { user: authProvider.username };
     },
-    Component: AuthLayout,
     children: [
       {
-        index: true,
+        path: "home",
+        loader: publicLoader,
         Component: PublicPage,
       },
       {
         path: "auth",
         action: loginAction,
         loader: loginLoader,
+        Component: AuthHeader,
         children: [
           {
             path: "login",
@@ -99,7 +111,7 @@ export const router = createBrowserRouter([
     path: "/logout",
     async action() {
       // We signout in a "resource route" that we can hit from a fetcher.Form
-      await fakeAuthProvider.signout();
+      await authProvider.signout();
       return redirect("/");
     },
   },

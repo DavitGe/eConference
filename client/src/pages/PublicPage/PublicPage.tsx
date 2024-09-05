@@ -1,5 +1,16 @@
+import Layout from "../../components/Layout/Layout";
+import Welcome from "./Components/Welcome/Welcome";
+import { PublicPageContainer } from "./public.styled";
+
 function PublicPage() {
-  return <h3>Public</h3>;
+  return (
+    <>
+      <Layout />
+      <PublicPageContainer>
+        <Welcome />
+      </PublicPageContainer>
+    </>
+  );
 }
 
 export default PublicPage;
