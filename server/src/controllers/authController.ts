@@ -29,7 +29,12 @@ const register = async (req: Request, res: Response): Promise<Response> => {
       maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
       sameSite: "strict", // Helps prevent CSRF attacks
     });
-    return res.status(201).json({ message: "User registered successfully" });
+    return res.status(200).json({
+      message: "User registered successfully",
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
   } else {
     return res.status(500).json({ message: "Error while creating user" });
   }
@@ -63,7 +68,11 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
     sameSite: "strict", // Helps prevent CSRF attacks
   });
-  return res.json({ token });
+  return res.json({
+    username: user.username,
+    email: user.email,
+    role: user.role,
+  });
 };
 
 const setup2FA = async (req: Request, res: Response): Promise<void> => {

@@ -8,15 +8,15 @@ interface AuthProvider {
 /**
  * This represents some generic auth provider API, like Firebase.
  */
-export const fakeAuthProvider: AuthProvider = {
+export const authProvider: AuthProvider = {
   isAuthenticated: false,
   username: null,
   async signin(username: string) {
-    fakeAuthProvider.isAuthenticated = true;
-    fakeAuthProvider.username = username;
+    authProvider.isAuthenticated = true;
+    authProvider.username = username;
   },
   async signout() {
-    fakeAuthProvider.isAuthenticated = false;
-    fakeAuthProvider.username = "";
+    authProvider.isAuthenticated = false;
+    authProvider.username = "";
   },
 };

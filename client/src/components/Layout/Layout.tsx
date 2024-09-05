@@ -8,10 +8,12 @@ interface ILayoutProps {
   isNavDisplayed?: boolean;
   height?: number;
   isAuthHeader?: boolean;
+  protectedPage?: boolean;
 }
 function Layout({
   isBgTransparent = true,
   isNavDisplayed = true,
+  protectedPage = false,
   height,
   isAuthHeader,
 }: ILayoutProps) {
@@ -45,35 +47,37 @@ function Layout({
             </nav>
           ) : null}
         </Flex>
-        <Flex align="center" gap={16}>
-          <Button
-            style={{ height: isAuthHeader ? 46 : 40 }}
-            onClick={() => {
-              navigate(
-                isAuthHeader
-                  ? isSignUp
-                    ? "/auth/login"
-                    : "/auth/register"
-                  : "/auth/login"
-              );
-            }}
-          >
-            <span style={{ fontSize: isAuthHeader ? 18 : 16 }}>
-              {isAuthHeader ? (isSignUp ? "Sign In" : "Sign Up") : "Log In"}
-            </span>
-          </Button>
-          {!isAuthHeader ? (
+        {protectedPage ? null : (
+          <Flex align="center" gap={16}>
             <Button
-              style={{ height: 40 }}
+              style={{ height: isAuthHeader ? 46 : 40 }}
               onClick={() => {
-                navigate("/auth/register");
+                navigate(
+                  isAuthHeader
+                    ? isSignUp
+                      ? "/auth/login"
+                      : "/auth/register"
+                    : "/auth/login"
+                );
               }}
-              type="primary"
             >
-              <span style={{ fontSize: 16 }}>Sign Up Free</span>
+              <span style={{ fontSize: isAuthHeader ? 18 : 16 }}>
+                {isAuthHeader ? (isSignUp ? "Sign In" : "Sign Up") : "Log In"}
+              </span>
             </Button>
-          ) : null}
-        </Flex>
+            {!isAuthHeader ? (
+              <Button
+                style={{ height: 40 }}
+                onClick={() => {
+                  navigate("/auth/register");
+                }}
+                type="primary"
+              >
+                <span style={{ fontSize: 16 }}>Sign Up Free</span>
+              </Button>
+            ) : null}
+          </Flex>
+        )}
       </LayoutContainer>
       <Outlet />
     </>
