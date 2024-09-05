@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { LayoutContainer } from "./layout.styles";
 import Logo from "../../components/Logo";
 import { Button, Flex } from "antd";
@@ -10,7 +10,9 @@ function AuthLayout() {
   return (
     <>
       <LayoutContainer>
-        <Logo height={40} width={200} />
+        <Link to="/home">
+          <Logo height={40} width={200} />
+        </Link>
         <Flex>
           <Button
             style={{ height: 46 }}

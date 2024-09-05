@@ -15,7 +15,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           token: {
             colorBorder: theme.light.color.dividerColor,
             fontFamily: "Roobert PRO",
-            colorText: "#1c1c1e",
+            colorText: theme.light.color.textColor,
+            colorPrimary: theme.light.color.primary,
           },
         }}
       >
