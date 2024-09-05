@@ -1,4 +1,4 @@
-import Layout from "../Layout/Layout";
+import Layout from "../../components/Layout/Layout";
 import Welcome from "./Components/Welcome/Welcome";
 import { PublicPageContainer } from "./public.styled";
 

@@ -1,11 +1,21 @@
 import styled from "styled-components";
 
-export const LayoutContainer = styled.div`
+export const LayoutContainer = styled.div<{
+  isBgTransparent?: boolean;
+  height?: number;
+  isAuthHeader?: boolean;
+}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-inline: 32px;
-  height: 72px;
+  height: ${(props) => props.height ?? 72}px;
+  ${({ isAuthHeader, theme }) =>
+    isAuthHeader
+      ? `border-bottom: 1px solid ${theme.theme.color.dividerColor};`
+      : ""};
+  background-color: ${({ isBgTransparent, theme }) =>
+    isBgTransparent ? "transparent" : theme.theme.color.bg};
   ul {
     display: flex;
     list-style: none;

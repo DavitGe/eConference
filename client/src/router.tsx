@@ -6,9 +6,9 @@ import {
 import { fakeAuthProvider } from "./context/auth";
 import PublicPage from "./pages/PublicPage/PublicPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import AuthLayout from "./pages/AuthLayout/AuthLayout";
 import RegisterPage from "./pages/LoginPage/RegisterPage";
-import Layout from "./pages/Layout/Layout";
+import Layout from "./components/Layout/Layout";
+import ProtectedPage from "./pages/ProtectedPage/ProtectedPage";
 
 async function loginAction({ request }: LoaderFunctionArgs) {
   let formData = await request.formData();
@@ -44,12 +44,6 @@ async function loginLoader() {
   return null;
 }
 
-async function homeLoader() {
-  if (!fakeAuthProvider.isAuthenticated) {
-    return redirect("/app/home");
-  }
-}
-
 function protectedLoader({ request }: LoaderFunctionArgs) {
   // If the user is not logged in and tries to access `/protected`, we redirect
   // them to `/login` with a `from` parameter that allows login to redirect back
@@ -62,16 +56,22 @@ function protectedLoader({ request }: LoaderFunctionArgs) {
   return null;
 }
 
-function ProtectedPage() {
-  return <h3>Protected</h3>;
-}
+const AuthHeader = () => {
+  return (
+    <Layout
+      isBgTransparent={false}
+      isNavDisplayed={false}
+      height={96}
+      isAuthHeader
+    />
+  );
+};
 
 export const router = createBrowserRouter([
   {
     id: "root",
     path: "/",
     loader() {
-      // Our root route always provides the user, if logged in
       return { user: fakeAuthProvider.username };
     },
     children: [
@@ -83,7 +83,7 @@ export const router = createBrowserRouter([
         path: "auth",
         action: loginAction,
         loader: loginLoader,
-        Component: AuthLayout,
+        Component: AuthHeader,
         children: [
           {
             path: "login",
