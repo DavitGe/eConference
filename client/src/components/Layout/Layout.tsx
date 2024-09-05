@@ -50,7 +50,11 @@ function Layout({
             style={{ height: isAuthHeader ? 46 : 40 }}
             onClick={() => {
               navigate(
-                !isAuthHeader || !isSignUp ? "/auth/login" : "/auth/register"
+                isAuthHeader
+                  ? isSignUp
+                    ? "/auth/login"
+                    : "/auth/register"
+                  : "/auth/login"
               );
             }}
           >
