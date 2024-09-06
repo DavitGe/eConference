@@ -4,7 +4,7 @@ import { User } from "../models/User";
 import {
   generateRefreshToken,
   generateToken,
-} from "src/controllers/authController";
+} from "../controllers/authController";
 
 interface JwtPayload {
   id: number;
