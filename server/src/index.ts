@@ -10,6 +10,7 @@ dotenv.config();
 
 AppDataSource.initialize()
   .then(() => {
+    // Uncomment if you need to run migrations
     // AppDataSource.runMigrations()
     //   .then(() => {
     //     console.log("Migrations run successfully");
@@ -18,14 +19,17 @@ AppDataSource.initialize()
     //     console.log("Error running migrations", e);
     //   });
 
-    // routes and middleware here
     const app = express();
     const port = process.env.PORT || 3000;
+
+    // CORS configuration
     app.use(cors({
       origin: "http://localhost:5173",
       credentials: true,
     }));
-    app.use(express.json()); // This is crucial to parse JSON body
+
+    app.use(express.json()); // To parse JSON body
+
     app.use(session({
       resave: false,
       saveUninitialized: false,
@@ -34,18 +38,12 @@ AppDataSource.initialize()
         maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
         sameSite: "none",
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production', // Only secure cookies in production
       },
-    }))
-    app.use(function (_, res, next) {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-      // res.setHeader("Access-Control-Allow-Credentials", true);
-      next();
-    });
+    }));
 
     app.use("/api/auth", authRoutes);
+
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });
