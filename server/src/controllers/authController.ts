@@ -23,11 +23,20 @@ const register = async (req: Request, res: Response): Promise<Response> => {
   const newUser = await User.create(user);
   if (newUser?.id) {
     const token = generateToken(newUser);
+    const refreshToken = generateRefreshToken(newUser);
+
     res.cookie("authorization", token, {
       httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client JavaScript
       secure: true, // Ensure the cookie is only sent over HTTPS
       maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
       sameSite: "strict", // Helps prevent CSRF attacks
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true, // Prevent access by JavaScript
+      secure: true, // Use only HTTPS
+      maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN), // Longer expiration (e.g., 7 days)
+      sameSite: "strict",
     });
     return res.status(200).json({
       message: "User registered successfully",
@@ -62,17 +71,33 @@ const login = async (req: Request, res: Response): Promise<Response> => {
   }
 
   const token = generateToken(user);
+  const refreshToken = generateRefreshToken(user);
+
   res.cookie("authorization", token, {
     httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client JavaScript
-    secure: true, // Ensure the cookie is only sent over HTTPS
     maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
-    sameSite: "strict", // Helps prevent CSRF attacks
+    secure: true
+  });
+  res.cookie("refreshToken",refreshToken, {
+    httpOnly: true, // Prevent access by JavaScript
+    maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN), // Longer expiration (e.g., 7 days)
+    secure: true
   });
   return res.json({
     username: user.username,
     email: user.email,
     role: user.role,
   });
+};
+
+const refreshToken = async (req: Request, res: Response): Promise<Response> => {
+  //token is refreshed automaticly in middleware
+  const user = req.user;
+  if (!user) 
+    return res.status(401).json({ message: "Unauthorized" });
+  return res.status(200).json({ username: user.username,
+    email: user.email,
+    role: user.role });
 };
 
 const setup2FA = async (req: Request, res: Response): Promise<void> => {
@@ -133,4 +158,22 @@ const generateToken = (user: IUser): string => {
   );
 };
 
-export { register, login, setup2FA, verify2FA };
+const generateRefreshToken = (user: IUser): string => {
+  return jwt.sign(
+    {
+      id: user.id,
+    },
+    process.env.JWT_REFRESH_SECRET as string,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN }
+  );
+};
+
+export {
+  register,
+  login,
+  setup2FA,
+  verify2FA,
+  generateRefreshToken,
+  generateToken,
+  refreshToken
+};
