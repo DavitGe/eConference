@@ -15,9 +15,13 @@ const protect = async (
   res: Response,
   next: NextFunction
 ): Promise<Response | void> => {
-  const token = req.headers.authorization?.split(" ")?.[1];
+  if(!req.headers.cookie?.length) return res.status(401).json({ message: "No token provided" });
+  const cookies = req.headers.cookie.split(' ');
+  const token = cookies.find((cookie) => cookie.includes('authorization'))?.split('=')[1]?.slice(0,-1) ?? '';
+  const refreshToken = cookies.find((cookie) => cookie.includes('refreshToken'))?.split('=')[1]?.slice(0,-1) ?? '';
+  if(!token?.length || !refreshToken?.length) return res.status(401).json({ message: "No token provided" });
 
-  if (!token || !req.headers?.refreshToken?.length) {
+  if (!token?.length || !refreshToken?.length) {
     return res.status(401).json({ message: "No token provided" });
   }
 
@@ -26,6 +30,7 @@ const protect = async (
       token,
       process.env.JWT_SECRET as string
     ) as JwtPayload;
+
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({ message: "Invalid token" });
@@ -33,9 +38,6 @@ const protect = async (
     req.user = user;
     next();
   } catch (error) {
-    const refreshToken = req.headers?.refreshToken;
-    if (typeof refreshToken !== "string")
-      return res.status(401).json({ message: "Invalid token" });
     try {
       const decoded = jwt.verify(
         refreshToken?.split(" ")?.[1] ?? "",

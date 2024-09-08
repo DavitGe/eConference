@@ -75,21 +75,29 @@ const login = async (req: Request, res: Response): Promise<Response> => {
 
   res.cookie("authorization", token, {
     httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client JavaScript
-    secure: true, // Ensure the cookie is only sent over HTTPS
     maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
-    sameSite: "strict", // Helps prevent CSRF attacks
+    secure: true
   });
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie("refreshToken",refreshToken, {
     httpOnly: true, // Prevent access by JavaScript
-    secure: true, // Use only HTTPS
     maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN), // Longer expiration (e.g., 7 days)
-    sameSite: "strict",
+    secure: true
   });
   return res.json({
     username: user.username,
     email: user.email,
     role: user.role,
   });
+};
+
+const refreshToken = async (req: Request, res: Response): Promise<Response> => {
+  //token is refreshed automaticly in middleware
+  const user = req.user;
+  if (!user) 
+    return res.status(401).json({ message: "Unauthorized" });
+  return res.status(200).json({ username: user.username,
+    email: user.email,
+    role: user.role });
 };
 
 const setup2FA = async (req: Request, res: Response): Promise<void> => {
@@ -149,6 +157,7 @@ const generateToken = (user: IUser): string => {
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
 };
+
 const generateRefreshToken = (user: IUser): string => {
   return jwt.sign(
     {
@@ -166,4 +175,5 @@ export {
   verify2FA,
   generateRefreshToken,
   generateToken,
+  refreshToken
 };
