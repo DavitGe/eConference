@@ -97,7 +97,15 @@ const refreshToken = async (req: Request, res: Response): Promise<Response> => {
     return res.status(401).json({ message: "Unauthorized" });
   return res.status(200).json({ username: user.username,
     email: user.email,
-    role: user.role });
+    role: user.role,
+    id: user.id
+  });
+};
+
+const signOut = async (req: Request, res: Response): Promise<void> => {
+  res.clearCookie("authorization");
+  res.clearCookie("refreshToken");
+  res.status(200).json({ message: "Sign out successful" });
 };
 
 const setup2FA = async (req: Request, res: Response): Promise<void> => {
@@ -175,5 +183,6 @@ export {
   verify2FA,
   generateRefreshToken,
   generateToken,
-  refreshToken
+  refreshToken,
+  signOut
 };
