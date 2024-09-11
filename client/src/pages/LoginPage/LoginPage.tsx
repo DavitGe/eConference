@@ -17,10 +17,10 @@ function LoginPage() {
 
   const onFinish: FormProps<fieldTypes>["onFinish"] = (values) => {
     axios
-      .post(API_URL + "/auth/login", {
+      .post("/api/auth/login", {
         email: values.email,
         password: values.password,
-      })
+      }, {withCredentials: true})
       .then(({ data }) => {
         authProvider.signin(data.username);
         messageApi.open({
