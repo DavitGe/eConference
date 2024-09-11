@@ -5,14 +5,14 @@ import { LayoutContainer } from "./layout.styles";
 import { authProvider } from "../../context/auth";
 
 interface ILayoutProps {
-  isBgTransparent?: boolean;
+  isbgtransparent?: boolean;
   isNavDisplayed?: boolean;
   height?: number;
   isAuthHeader?: boolean;
   protectedPage?: boolean;
 }
 function Layout({
-  isBgTransparent = true,
+  isbgtransparent = true,
   isNavDisplayed = true,
   protectedPage = false,
   height,
@@ -24,7 +24,7 @@ function Layout({
   return (
     <>
       <LayoutContainer
-        isBgTransparent={isBgTransparent}
+        isbgtransparent={isbgtransparent}
         height={height}
         isAuthHeader={isAuthHeader}
       >
@@ -48,7 +48,7 @@ function Layout({
             </nav>
           ) : null}
         </Flex>
-        {protectedPage ? (
+        {protectedPage || authProvider.isAuthenticated ? (
           <Button
             type="text"
             onClick={() => {

@@ -6,6 +6,7 @@ import App from "./App";
 import { ThemeProvider } from "styled-components";
 import theme from "./styled-theme";
 import { ConfigProvider } from "antd";
+import { CookiesProvider } from "react-cookie";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -20,7 +21,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           },
         }}
       >
-        <App />
+        <CookiesProvider defaultSetOptions={{ path: '/' }}>
+          <App />
+        </CookiesProvider>
       </ConfigProvider>
     </ThemeProvider>
   </React.StrictMode>

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const LayoutContainer = styled.div<{
-  isBgTransparent?: boolean;
+  isbgtransparent?: boolean;
   height?: number;
   isAuthHeader?: boolean;
 }>`
@@ -14,8 +14,8 @@ export const LayoutContainer = styled.div<{
     isAuthHeader
       ? `border-bottom: 1px solid ${theme.theme.color.dividerColor};`
       : ""};
-  background-color: ${({ isBgTransparent, theme }) =>
-    isBgTransparent ? "transparent" : theme.theme.color.bg};
+  background-color: ${({ isbgtransparent, theme }) =>
+    isbgtransparent ? "transparent" : theme.theme.color.bg};
   ul {
     display: flex;
     list-style: none;
