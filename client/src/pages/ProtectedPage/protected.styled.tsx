@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ProtectedWrapper = styled.div`
+export const ProtectedWrapper = styled.form`
   display: flex;
   padding-inline: 124px;
   width: 100%;
