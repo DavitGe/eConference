@@ -1,13 +1,16 @@
 import { useEffect, useCallback, useState } from "react";
+import ReactPlayer from "react-player";
 import { useSocket } from "../../context/SocketProvider";
 import peer from "../../services/peer";
-import ReactPlayer from "react-player";
+import { useParams } from "react-router-dom";
+import { authProvider } from "../../context/auth";
 
 const RoomPage = () => {
   const socket = useSocket();
-  const [remoteSocketId, setRemoteSocketId] = useState(null);
+  const [remoteSocketId, setRemoteSocketId] = useState<any>(null);
   const [myStream, setMyStream] = useState<any>();
   const [remoteStream, setRemoteStream] = useState<any>();
+  const { room } = useParams();
 
   const handleUserJoined = useCallback(({ email, id }: any) => {
     console.log(`Email ${email} joined room`);
@@ -41,7 +44,7 @@ const RoomPage = () => {
 
   const sendStreams = useCallback(() => {
     for (const track of myStream.getTracks()) {
-      peer.peer?.addTrack(track, myStream);
+      peer?.peer?.addTrack(track, myStream);
     }
   }, [myStream]);
 
@@ -59,13 +62,6 @@ const RoomPage = () => {
     socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
   }, [remoteSocketId, socket]);
 
-  useEffect(() => {
-    peer.peer?.addEventListener("negotiationneeded", handleNegoNeeded);
-    return () => {
-      peer.peer?.removeEventListener("negotiationneeded", handleNegoNeeded);
-    };
-  }, [handleNegoNeeded]);
-
   const handleNegoNeedIncomming = useCallback(
     async ({ from, offer }: any) => {
       const ans = await peer.getAnswer(offer);
@@ -79,10 +75,21 @@ const RoomPage = () => {
   }, []);
 
   useEffect(() => {
+    socket.emit("room:join", { room, email: authProvider.email });
+  }, []);
+
+  useEffect(() => {
+    peer.peer?.addEventListener("negotiationneeded", handleNegoNeeded);
+    return () => {
+      peer.peer?.removeEventListener("negotiationneeded", handleNegoNeeded);
+    };
+  }, [handleNegoNeeded]);
+
+  useEffect(() => {
     peer.peer?.addEventListener("track", async (ev) => {
       const remoteStream = ev.streams;
       console.log("GOT TRACKS!!");
-      setRemoteStream(remoteStream?.[0]);
+      setRemoteStream(remoteStream[0]);
     });
   }, []);
 

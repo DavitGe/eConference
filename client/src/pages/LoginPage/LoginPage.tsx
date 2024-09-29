@@ -22,7 +22,7 @@ function LoginPage() {
         password: values.password,
       }, {withCredentials: true})
       .then(({ data }) => {
-        authProvider.signin(data.username);
+        authProvider.signin(data.username, data.email);
         messageApi.open({
           type: "success",
           content: "User logged in successfully",

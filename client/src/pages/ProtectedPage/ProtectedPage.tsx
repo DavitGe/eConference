@@ -7,6 +7,7 @@ import ilustration from "./ilustration.svg";
 import { useSocket } from "../../context/SocketProvider";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
+import { authProvider } from "../../context/auth";
 
 const ProtectedPage = () => {
   const [meetingLink, setMeetingLink] = useState("");
@@ -17,14 +18,19 @@ const ProtectedPage = () => {
   const handleSubmitForm: React.FormEventHandler<HTMLFormElement> = useCallback(
     (e) => {
       e.preventDefault();
-      socket.emit("room:join", { room: meetingLink });
+      socket.emit("room:join", {
+        room: meetingLink,
+        email: authProvider.email,
+      });
     },
     [meetingLink, socket]
   );
+
   const handleCreateRoom = useCallback(() => {
     const newRoomId = uuid();
-    socket.emit("room:join", { room: newRoomId });
+    socket.emit("room:join", { room: newRoomId, email: authProvider.email });
   }, []);
+
   const handleJoinRoom = useCallback(
     (data: any) => {
       const { room } = data;

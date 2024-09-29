@@ -26,7 +26,7 @@ function RegisterPage() {
         username: values.username,
       })
       .then(({ data }) => {
-        authProvider.signin(data.username);
+        authProvider.signin(data.username, data.email);
         messageApi.open({
           type: "success",
           content: "User registered successfully",
