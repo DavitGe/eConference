@@ -76,12 +76,12 @@ const login = async (req: Request, res: Response): Promise<Response> => {
   res.cookie("authorization", token, {
     httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client JavaScript
     maxAge: Number(process.env.JWT_EXPIRES_IN), // Set expiration time in milliseconds (e.g., 1 hour)
-    secure: true
+    secure: true,
   });
-  res.cookie("refreshToken",refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true, // Prevent access by JavaScript
     maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN), // Longer expiration (e.g., 7 days)
-    secure: true
+    secure: true,
   });
   return res.json({
     username: user.username,
@@ -93,12 +93,12 @@ const login = async (req: Request, res: Response): Promise<Response> => {
 const refreshToken = async (req: Request, res: Response): Promise<Response> => {
   //token is refreshed automaticly in middleware
   const user = req.user;
-  if (!user) 
-    return res.status(401).json({ message: "Unauthorized" });
-  return res.status(200).json({ username: user.username,
+  if (!user) return res.status(401).json({ message: "Unauthorized" });
+  return res.status(200).json({
+    username: user.username,
     email: user.email,
     role: user.role,
-    id: user.id
+    id: user.id,
   });
 };
 
@@ -184,5 +184,5 @@ export {
   generateRefreshToken,
   generateToken,
   refreshToken,
-  signOut
+  signOut,
 };

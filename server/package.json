@@ -40,6 +40,7 @@
     "mysql2": "^3.11.0",
     "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.7.5",
     "speakeasy": "^2.0.0",
     "typeorm": "^0.3.20"
   }
