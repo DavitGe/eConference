@@ -4,12 +4,15 @@ import { useSocket } from "../../context/SocketProvider";
 import peer from "../../services/peer";
 import { useParams } from "react-router-dom";
 import { authProvider } from "../../context/auth";
+import { RoomPageHeader, RoomPageWrapper } from "./roomPage.styled";
+import { LuVideo } from "react-icons/lu";
+import { Avatar, Divider } from "antd";
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState<any>(null);
-  const [myStream, setMyStream] = useState<any>();
-  const [remoteStream, setRemoteStream] = useState<any>();
+  const [myStream, setMyStream] = useState<MediaStream>();
+  const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const { room } = useParams();
 
   const handleUserJoined = useCallback(({ email, id }: any) => {
@@ -43,6 +46,7 @@ const RoomPage = () => {
   );
 
   const sendStreams = useCallback(() => {
+    if (!myStream) return;
     for (const track of myStream.getTracks()) {
       peer?.peer?.addTrack(track, myStream);
     }
@@ -117,7 +121,17 @@ const RoomPage = () => {
   ]);
 
   return (
-    <div>
+    <RoomPageWrapper>
+      <RoomPageHeader>
+        <div className="header-content">
+          <LuVideo color="#1777ff" fontSize={24} />
+          <h3>{room}</h3>
+          <span>01:35:22</span>
+        </div>
+        <div>
+          <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
+        </div>
+      </RoomPageHeader>
       <h1>Room Page</h1>
       <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
       {myStream && <button onClick={sendStreams}>Send Stream</button>}
@@ -146,7 +160,7 @@ const RoomPage = () => {
           />
         </>
       )}
-    </div>
+    </RoomPageWrapper>
   );
 };
 
