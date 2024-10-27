@@ -8,7 +8,6 @@ import RegisterPage from "./pages/LoginPage/RegisterPage";
 import ProtectedPage from "./pages/ProtectedPage/ProtectedPage";
 import Layout from "./components/Layout/Layout";
 import { rootLoader } from "./utils/loaders/rootLoader";
-import LobbyPage from "./pages/lobby/LobbyPage";
 import RoomPage from "./pages/roomPage/RoomPage";
 
 const AuthHeader = () => {
@@ -58,11 +57,8 @@ export const router = createBrowserRouter([
         Component: ProtectedPage,
       },
       {
-        path: "lobby",
-        Component: LobbyPage,
-      },
-      {
         path: "room/:room",
+        action: requireAuth,
         Component: RoomPage,
       },
     ],

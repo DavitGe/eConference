@@ -1,13 +1,19 @@
 import { useEffect, useCallback, useState } from "react";
+import ReactPlayer from "react-player";
 import { useSocket } from "../../context/SocketProvider";
 import peer from "../../services/peer";
-import ReactPlayer from "react-player";
+import { useParams } from "react-router-dom";
+import { authProvider } from "../../context/auth";
+import { RoomPageHeader, RoomPageWrapper } from "./roomPage.styled";
+import { LuVideo } from "react-icons/lu";
+import { Avatar, Divider } from "antd";
 
 const RoomPage = () => {
   const socket = useSocket();
-  const [remoteSocketId, setRemoteSocketId] = useState(null);
-  const [myStream, setMyStream] = useState<any>();
-  const [remoteStream, setRemoteStream] = useState<any>();
+  const [remoteSocketId, setRemoteSocketId] = useState<any>(null);
+  const [myStream, setMyStream] = useState<MediaStream>();
+  const [remoteStream, setRemoteStream] = useState<MediaStream>();
+  const { room } = useParams();
 
   const handleUserJoined = useCallback(({ email, id }: any) => {
     console.log(`Email ${email} joined room`);
@@ -40,8 +46,9 @@ const RoomPage = () => {
   );
 
   const sendStreams = useCallback(() => {
+    if (!myStream) return;
     for (const track of myStream.getTracks()) {
-      peer.peer?.addTrack(track, myStream);
+      peer?.peer?.addTrack(track, myStream);
     }
   }, [myStream]);
 
@@ -59,13 +66,6 @@ const RoomPage = () => {
     socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
   }, [remoteSocketId, socket]);
 
-  useEffect(() => {
-    peer.peer?.addEventListener("negotiationneeded", handleNegoNeeded);
-    return () => {
-      peer.peer?.removeEventListener("negotiationneeded", handleNegoNeeded);
-    };
-  }, [handleNegoNeeded]);
-
   const handleNegoNeedIncomming = useCallback(
     async ({ from, offer }: any) => {
       const ans = await peer.getAnswer(offer);
@@ -79,10 +79,21 @@ const RoomPage = () => {
   }, []);
 
   useEffect(() => {
+    socket.emit("room:join", { room, email: authProvider.email });
+  }, []);
+
+  useEffect(() => {
+    peer.peer?.addEventListener("negotiationneeded", handleNegoNeeded);
+    return () => {
+      peer.peer?.removeEventListener("negotiationneeded", handleNegoNeeded);
+    };
+  }, [handleNegoNeeded]);
+
+  useEffect(() => {
     peer.peer?.addEventListener("track", async (ev) => {
       const remoteStream = ev.streams;
       console.log("GOT TRACKS!!");
-      setRemoteStream(remoteStream?.[0]);
+      setRemoteStream(remoteStream[0]);
     });
   }, []);
 
@@ -110,7 +121,17 @@ const RoomPage = () => {
   ]);
 
   return (
-    <div>
+    <RoomPageWrapper>
+      <RoomPageHeader>
+        <div className="header-content">
+          <LuVideo color="#1777ff" fontSize={24} />
+          <h3>{room}</h3>
+          <span>01:35:22</span>
+        </div>
+        <div>
+          <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
+        </div>
+      </RoomPageHeader>
       <h1>Room Page</h1>
       <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
       {myStream && <button onClick={sendStreams}>Send Stream</button>}
@@ -139,7 +160,7 @@ const RoomPage = () => {
           />
         </>
       )}
-    </div>
+    </RoomPageWrapper>
   );
 };
 

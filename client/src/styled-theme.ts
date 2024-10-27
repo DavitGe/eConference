@@ -19,7 +19,14 @@ const defaultTheme = {
     large: "15px",
     circle: "50%",
   },
+  roomColors: {
+    bg: "#1b1a1d",
+    textColor: "#ebeaea",
+    containerColor: "#2b2d2e",
+    border: "#484849",
+  },
 };
+
 const theme = {
   light: {
     color: lightTheme,

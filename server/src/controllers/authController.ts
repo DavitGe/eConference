@@ -102,7 +102,7 @@ const refreshToken = async (req: Request, res: Response): Promise<Response> => {
   });
 };
 
-const signOut = async (req: Request, res: Response): Promise<void> => {
+const signOut = async (_: Request, res: Response): Promise<void> => {
   res.clearCookie("authorization");
   res.clearCookie("refreshToken");
   res.status(200).json({ message: "Sign out successful" });
